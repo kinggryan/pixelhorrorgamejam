@@ -14,11 +14,18 @@ public class Character : MonoBehaviour {
     public float gravity = 9.8f;
     public float maxFallSpeed;
 
+    public AudioSource footstepAudioSource;
+
+    private float footstepsWalkingVolume;
+
 	// Use this for initialization
 	void Start () {
         camera = Camera.main;
         mouseLook.Init(transform, camera.transform);
         characterController = GetComponent<CharacterController>();
+
+        footstepsWalkingVolume = footstepAudioSource.volume;
+        footstepAudioSource.volume = 0;
     }
 
     Vector2 GetInput()
@@ -60,6 +67,11 @@ public class Character : MonoBehaviour {
         if(characterController.velocity.magnitude > 0.01)
         {
             MonsterAI.monster.HearSound(transform.position, characterController.velocity.magnitude / maxSpeed);
+            footstepAudioSource.volume = Mathf.Lerp(footstepAudioSource.volume, footstepsWalkingVolume, 0.95f);
+        }
+        else
+        {
+            footstepAudioSource.volume = Mathf.Max(footstepAudioSource.volume - 3f * Time.deltaTime, 0);
         }
     }
 }
